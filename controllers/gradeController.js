@@ -3,8 +3,10 @@ import { logger } from '../config/logger.js';
 
 const create = async (req, res) => {
   try {
-    res.send();
-    logger.info(`POST /grade - ${JSON.stringify()}`);
+    const newGrade = new studentModel(req.body);
+    await newGrade.save();
+    res.send(newGrade);
+    logger.info(`POST /grade - ${JSON.stringify(newGrade)}`);
   } catch (error) {
     res
       .status(500)
@@ -22,7 +24,8 @@ const findAll = async (req, res) => {
     : {};
 
   try {
-    res.send();
+    const newGrade = await studentModel.find(condition);
+    res.send(newGrade);
     logger.info(`GET /grade`);
   } catch (error) {
     res
@@ -36,7 +39,8 @@ const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    res.send();
+    const newGrade = await studentModel.findById({ _id: id });
+    res.send(newGrade);
 
     logger.info(`GET /grade - ${id}`);
   } catch (error) {
@@ -55,6 +59,11 @@ const update = async (req, res) => {
   const id = req.params.id;
 
   try {
+    const newGrade = await studentModel.findByIdAndUpdate(
+      { _id: id },
+      req.body,
+      { new: true }
+    );
     res.send({ message: 'Grade atualizado com sucesso' });
 
     logger.info(`PUT /grade - ${id} - ${JSON.stringify(req.body)}`);
@@ -68,6 +77,10 @@ const remove = async (req, res) => {
   const id = req.params.id;
 
   try {
+    const newGrade = await studentModel.findByIdAndDelete({ _id: id });
+    if (!newGrade) {
+      res.status(404).send('Documento não encontrado na coleção');
+    }
     res.send({ message: 'Grade excluido com sucesso' });
 
     logger.info(`DELETE /grade - ${id}`);
@@ -80,9 +93,8 @@ const remove = async (req, res) => {
 };
 
 const removeAll = async (req, res) => {
-  const id = req.params.id;
-
   try {
+    const newGrade = await studentModel.deleteMany();
     res.send({
       message: `Grades excluidos`,
     });

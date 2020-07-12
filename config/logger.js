@@ -14,8 +14,10 @@ const logger = createLogger({
     new transports.Console(),
     new transports.MongoDB({
       level: 'info',
-      db: process.env.MONGODB,
-      collection: 'logs_grades',
+      db:
+        'mongodb+srv://igtiuser:igtiuser123@cluster0.dsinm.mongodb.net/grades?retryWrites=true&w=majority',
+      //process.env.MONGODB,
+      collection: 'student',
       capped: true,
       cappedMax: 20,
       options: {

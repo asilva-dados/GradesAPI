@@ -1,5 +1,6 @@
 import express from 'express';
 import controller from '../controllers/gradeController.js';
+import mongoose from 'mongoose';
 
 const app = express();
 
