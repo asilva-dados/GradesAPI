@@ -14,9 +14,7 @@ const logger = createLogger({
     new transports.Console(),
     new transports.MongoDB({
       level: 'info',
-      db:
-        'mongodb+srv://igtiuser:igtiuser123@cluster0.dsinm.mongodb.net/grades?retryWrites=true&w=majority',
-      //process.env.MONGODB,
+      db: process.env.MONGODB,
       collection: 'student',
       capped: true,
       cappedMax: 20,
@@ -27,7 +25,7 @@ const logger = createLogger({
     }),
   ],
   format: format.combine(
-    label({ label: 'grade-api' }),
+    label({ label: 'grades-api' }),
     format.timestamp(),
     myFormat
   ),
