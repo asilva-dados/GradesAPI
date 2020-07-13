@@ -3,7 +3,7 @@ import { logger } from '../config/logger.js';
 
 const create = async (req, res) => {
   try {
-    const newGrade = new studentModel(req.body);
+    const newGrade = new db.studentModel(req.body);
     await newGrade.save();
     res.send(newGrade);
     logger.info(`POST /grade - ${JSON.stringify(newGrade)}`);
@@ -24,8 +24,13 @@ const findAll = async (req, res) => {
     : {};
 
   try {
-    const newGrade = await studentModel.find(condition);
-    res.send(newGrade);
+    const newGrade = await db.studentModel.find(condition);
+    if (newGrade.length < 1) {
+      res.status(404).send({ message: 'Nenhum registro encontrado.' });
+    } else {
+      res.send(newGrade);
+    }
+
     logger.info(`GET /grade`);
   } catch (error) {
     res
@@ -39,8 +44,12 @@ const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const newGrade = await studentModel.findById({ _id: id });
-    res.send(newGrade);
+    const newGrade = await db.studentModel.findById({ _id: id });
+    if (newGrade.length < 1) {
+      res.status(404).send({ message: 'Registro não encontrado.' });
+    } else {
+      res.send(newGrade);
+    }
 
     logger.info(`GET /grade - ${id}`);
   } catch (error) {
@@ -59,12 +68,16 @@ const update = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const newGrade = await studentModel.findByIdAndUpdate(
+    const newGrade = await db.studentModel.findByIdAndUpdate(
       { _id: id },
       req.body,
       { new: true }
     );
-    res.send({ message: 'Grade atualizado com sucesso' });
+    if (newGrade.length < 1) {
+      res.status(404).send({ message: 'Registro não encontrado.' });
+    } else {
+      res.send({ message: 'Grade atualizado com sucesso' });
+    }
 
     logger.info(`PUT /grade - ${id} - ${JSON.stringify(req.body)}`);
   } catch (error) {
@@ -77,11 +90,12 @@ const remove = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const newGrade = await studentModel.findByIdAndDelete({ _id: id });
+    const newGrade = await db.studentModel.findByIdAndDelete({ _id: id });
     if (!newGrade) {
       res.status(404).send('Documento não encontrado na coleção');
+    } else {
+      res.send({ message: 'Grade excluido com sucesso' });
     }
-    res.send({ message: 'Grade excluido com sucesso' });
 
     logger.info(`DELETE /grade - ${id}`);
   } catch (error) {
@@ -94,10 +108,14 @@ const remove = async (req, res) => {
 
 const removeAll = async (req, res) => {
   try {
-    const newGrade = await studentModel.deleteMany();
-    res.send({
-      message: `Grades excluidos`,
-    });
+    const newGrade = await db.studentModel.deleteMany();
+    if (newGrade.length < 1) {
+      res
+        .status(404)
+        .send({ message: 'Nenhum registro encontrado para exclusão.' });
+    } else {
+      res.send({ message: 'Grades excluidos' });
+    }
     logger.info(`DELETE /grade`);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao excluir todos as Grades' });
